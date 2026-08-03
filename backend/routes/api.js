@@ -1,5 +1,7 @@
 const router = require('express').Router();
+const rateLimit = require('express-rate-limit');
 const { supabase, createAuthenticatedClient } = require('../supabaseClient');
+const { getVisibleSkillEvidence } = require('../services/skillEvidence');
 
 const requireSupabase = (res) => {
     if (!supabase) {
@@ -16,6 +18,13 @@ const ownerEmails = new Set(
     (process.env.PORTFOLIO_OWNER_EMAILS || '')
         .split(',').map((email) => email.trim().toLowerCase()).filter(Boolean),
 );
+
+const ownerWriteLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 30,
+    standardHeaders: true,
+    legacyHeaders: false,
+});
 
 const requireOwner = async (req, res, next) => {
     const header = req.get('authorization') || '';
@@ -63,6 +72,16 @@ router.route('/skills').get(async (req, res) => {
     return res.json(data);
 });
 
+router.route('/skills/:slug/evidence').get(async (req, res) => {
+    try {
+        const data = await getVisibleSkillEvidence(req.params.slug);
+        if (!data) return res.status(404).json({ error: 'Visible skill not found' });
+        return res.json(data);
+    } catch (error) {
+        return res.status(400).json({ error: error.message });
+    }
+});
+
 router.route('/site-content').get(async (req, res) => {
     if (!requireSupabase(res)) {
         return;
@@ -104,7 +123,7 @@ router.route('/contact').post(async (req, res) => {
     return res.json('Contact form submitted!');
 });
 
-router.put('/admin/site-content/:pageKey', requireOwner, async (req, res) => {
+router.put('/admin/site-content/:pageKey', ownerWriteLimiter, requireOwner, async (req, res) => {
     if (!req.body || typeof req.body.content !== 'object' || Array.isArray(req.body.content)) {
         return res.status(422).json({ error: 'content must be a JSON object' });
     }

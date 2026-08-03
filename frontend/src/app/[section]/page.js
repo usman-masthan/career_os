@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { content } from "../content";
+import SkillEvidenceExplorer from "../components/SkillEvidenceExplorer";
 
 const sections = {
   about: { eyebrow: "About", title: "Engineering with intent.", intro: content.profile.summary, body: ["I care about the whole path from an ambiguous question to a dependable product. That means listening closely, modelling the problem, making trade-offs visible, and leaving systems easier to understand than I found them.", "CareerOS makes that practice inspectable. It connects outcomes to projects, skills to evidence, and ongoing learning to the work it improves."] },
@@ -22,7 +23,7 @@ export default function SectionPage({ params }) {
     {params.section === "projects" && <div className="project-list">{content.projects.map((x,i)=><Link href={`/projects/${x.slug}`} key={x.slug}><span>0{i+1}</span><div><h2>{x.title}</h2><p>{x.summary}</p><small>{x.tags.join(" · ")}</small></div><b>View case study ↗</b></Link>)}</div>}
     {params.section === "experience" && <div className="timeline">{content.experience.map(x=><article key={x.role}><time>{x.period}</time><div><h2>{x.role}</h2><b>{x.organisation}</b><p>{x.detail}</p></div></article>)}</div>}
     {params.section === "research" && <div className="article-grid">{content.research.map(x=><article key={x.title}><small>{x.status}</small><h2>{x.title}</h2><p>{x.abstract}</p></article>)}</div>}
-    {params.section === "skills" && <div className="article-grid">{content.skills.map(x=><article key={x.group}><small>Capability area</small><h2>{x.group}</h2><div className="skill-cloud">{x.items.map(y=><span key={y}>{y}</span>)}</div></article>)}</div>}
+    {params.section === "skills" && <SkillEvidenceExplorer />}
     {params.section === "credentials" && <div className="article-grid">{content.credentials.map(x=><article key={x.title}><small>{x.date}</small><h2>{x.title}</h2><p>{x.issuer}</p></article>)}</div>}
     {page.body && <div className="prose">{page.body.map(x=><p key={x}>{x}</p>)}</div>}
     {params.section === "achievements" && <div className="article-grid"><article><small>01</small><h2>CareerOS launched</h2><p>Designed a structured, responsive home for professional evidence.</p></article><article><small>02</small><h2>Research into practice</h2><p>Converted ongoing inquiry into explainable product and engineering patterns.</p></article></div>}
