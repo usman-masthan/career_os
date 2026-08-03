@@ -43,6 +43,12 @@ app.use((error, req, res, next) => {
     return next(error);
 });
 
-app.listen(port, () => {
-    console.log(`Server is running on port: ${port}`);
-});
+// Vercel imports the Express application as a serverless function. Keep the
+// listener only for local development and traditional Node.js hosting.
+if (require.main === module) {
+    app.listen(port, () => {
+        console.log(`Server is running on port: ${port}`);
+    });
+}
+
+module.exports = app;
