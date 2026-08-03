@@ -1,5 +1,6 @@
 import "./globals.css";
 import SiteShell from "./components/SiteShell";
+import { ThemeProvider } from "./context/ThemeContext";
 
 export const metadata = {
   metadataBase: new URL("https://ahamed.dev"),
@@ -9,5 +10,5 @@ export const metadata = {
 };
 
 export default function RootLayout({ children }) {
-  return <html lang="en"><body><SiteShell>{children}</SiteShell></body></html>;
+  return <html lang="en" suppressHydrationWarning><body><ThemeProvider><SiteShell>{children}</SiteShell></ThemeProvider></body></html>;
 }

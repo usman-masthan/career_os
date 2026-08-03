@@ -1,34 +1,10 @@
 "use client";
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { FiSun, FiMoon } from 'react-icons/fi';
+import { useTheme } from '../context/ThemeContext';
 
 const Navbar = () => {
-    const [isDarkMode, setIsDarkMode] = useState(false);
-
-    useEffect(() => {
-        // Check initial theme preference
-        if (localStorage.theme === 'dark' ||
-            (!('theme' in localStorage) &&
-            window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-            setIsDarkMode(true);
-            document.documentElement.classList.add('dark');
-        } else {
-            setIsDarkMode(false);
-            document.documentElement.classList.remove('dark');
-        }
-    }, []);
-
-    const toggleTheme = () => {
-        if (isDarkMode) {
-            document.documentElement.classList.remove('dark');
-            localStorage.theme = 'light';
-            setIsDarkMode(false);
-        } else {
-            document.documentElement.classList.add('dark');
-            localStorage.theme = 'dark';
-            setIsDarkMode(true);
-        }
-    };
+    const { isDarkMode, toggleTheme } = useTheme();
 
     return (
         <div className='fixed top-0 right-0 p-4 z-[100]'>
