@@ -4,23 +4,26 @@ import { createContext, useContext, useEffect, useState } from 'react';
 
 const ThemeContext = createContext();
 
+const themeInitializationScript = `
+  (() => {
+    const storedTheme = localStorage.getItem('theme');
+    const isDark = storedTheme
+      ? storedTheme === 'dark'
+      : window.matchMedia('(prefers-color-scheme: dark)').matches;
+    document.documentElement.classList.toggle('dark', isDark);
+  })();
+`;
+
 export function ThemeProvider({ children }) {
-  const [isDarkMode, setIsDarkMode] = useState(true);
+  const [isDarkMode, setIsDarkMode] = useState(null);
 
   useEffect(() => {
-    // Check if user has a theme preference in localStorage
-    const storedTheme = localStorage.getItem('theme');
-    if (storedTheme) {
-      setIsDarkMode(storedTheme === 'dark');
-    } else {
-      // Check if user prefers dark mode at OS level
-      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      setIsDarkMode(prefersDark);
-    }
+    setIsDarkMode(document.documentElement.classList.contains('dark'));
   }, []);
 
   useEffect(() => {
-    // Update the HTML class and localStorage when theme changes
+    if (isDarkMode === null) return;
+
     if (isDarkMode) {
       document.documentElement.classList.add('dark');
       localStorage.setItem('theme', 'dark');
@@ -31,13 +34,18 @@ export function ThemeProvider({ children }) {
   }, [isDarkMode]);
 
   const toggleTheme = () => {
-    setIsDarkMode(!isDarkMode);
+    setIsDarkMode((currentTheme) => currentTheme === null
+      ? !document.documentElement.classList.contains('dark')
+      : !currentTheme);
   };
 
   return (
-    <ThemeContext.Provider value={{ isDarkMode, toggleTheme }}>
-      {children}
-    </ThemeContext.Provider>
+    <>
+      <script dangerouslySetInnerHTML={{ __html: themeInitializationScript }} />
+      <ThemeContext.Provider value={{ isDarkMode, toggleTheme }}>
+        {children}
+      </ThemeContext.Provider>
+    </>
   );
 }
 
