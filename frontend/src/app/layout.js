@@ -5,7 +5,7 @@ import { ThemeProvider } from "./context/ThemeContext";
 export const metadata = {
   metadataBase: new URL("https://ahamed.dev"),
   title: { default: "CareerOS — Ahamed's living career record", template: "%s — CareerOS" },
-  description: "CareerOS connects Ahamed's projects, skills, research, credentials, and writing in a living professional record powered by Supabase.",
+  description: "The security engineering portfolio and professional record of Ahamed Usman.",
   applicationName: "CareerOS",
   openGraph: {
     title: "CareerOS",

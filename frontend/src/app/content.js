@@ -6,9 +6,10 @@
 /** @type {CareerContent} */
 export const content = {
   profile: {
-    name: "Ahamed", mark: "Ahamed.dev", role: "Software Engineer · AI & data systems",
+    name: "Ahamed Usman", mark: "AU.SEC", role: "Cybersecurity Engineer · Security Researcher",
+    image: "/profile.jpeg",
     location: "Sri Lanka · Open to remote", availability: "Available for selected opportunities",
-    summary: "I design dependable digital products at the intersection of software engineering, applied AI, and thoughtful user experience. CareerOS is my living record of the work, evidence, and ideas behind that practice."
+    summary: "I secure modern systems by turning complex risk into clear, practical engineering decisions. This is my living record of security projects, research, credentials, and measurable outcomes."
   },
   projects: [
     { slug: "career-os", title: "CareerOS", summary: "An evidence-first career platform that turns projects, learning, and outcomes into a navigable professional record.", impact: "One source of truth for career evidence", tags: ["Next.js", "Supabase", "Product systems"], challenge: "Portfolios often become static galleries that separate claims from their evidence.", approach: "I designed a structured content model and two reading modes: an exploratory portfolio and a focused 60-second recruiter view.", outcome: "A maintainable system where projects, credentials, research, and writing build one coherent professional narrative." },

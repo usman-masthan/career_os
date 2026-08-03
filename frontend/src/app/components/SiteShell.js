@@ -19,7 +19,7 @@ export default function SiteShell({ children }) {
 
   return <div className={recruiter ? "recruiter-mode" : ""}>
     <header className="site-header">
-      <Link className="brand" href="/" aria-label="Ahamed.dev home"><span>A</span>Ahamed.dev</Link>
+      <Link className="brand" href="/" aria-label="Ahamed Usman home"><span>AU</span><b>AHAMED USMAN</b><small>SECURITY / ENGINEERING</small></Link>
       <button className="menu" onClick={() => setOpen(!open)} aria-expanded={open}>Menu</button>
       <nav className={open ? "nav open" : "nav"} aria-label="Primary navigation">
         {navigation.map((item) => <Link key={item} href={`/${item.toLowerCase()}`} onClick={() => setOpen(false)}>{item === "Writing" ? "Writing / Updates" : item}</Link>)}
@@ -30,6 +30,6 @@ export default function SiteShell({ children }) {
     </header>
     {recruiter && <div className="mode-banner"><strong>60-second view</strong><span>Only decision-ready evidence is shown.</span><button onClick={() => setRecruiter(false)}>Exit</button></div>}
     {children}
-    <footer><Link className="brand" href="/"><span>A</span>Ahamed.dev</Link><p>Built as a living career system, not a static portfolio.</p><Link href="/admin/login">Admin login</Link></footer>
+    <footer><Link className="brand" href="/"><span>AU</span><b>AHAMED USMAN</b></Link><p>Security is a practice, not a claim.</p><Link href="/admin/login">SYSTEM ACCESS</Link></footer>
   </div>;
 }
