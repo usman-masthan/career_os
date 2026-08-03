@@ -4,6 +4,11 @@ require('dotenv').config();
 
 const app = express();
 const port = process.env.PORT || 5000;
+const { missingSupabaseEnvironment } = require('./supabaseClient');
+
+if (missingSupabaseEnvironment.length) {
+    console.error(`Missing required environment variables: ${missingSupabaseEnvironment.join(', ')}`);
+}
 
 const allowedOrigins = new Set([
     process.env.FRONTEND_URL,

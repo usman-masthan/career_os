@@ -1,0 +1,2 @@
+import {getSiteContent,optional} from "../data";import PageHeader from "../components/PageHeader";import SkillEvidenceExplorer from "../components/SkillEvidenceExplorer";
+export default async function Skills(){const {data:copy}=await optional(()=>getSiteContent("skills"),{});return <main className="page"><PageHeader eyebrow={copy.eyebrow} title={copy.title} intro={copy.intro} status={copy.status}/><SkillEvidenceExplorer copy={copy.explorer||{}}/></main>}

@@ -3,7 +3,7 @@ const { supabase } = require('../supabaseClient');
 /** Return one public skill and every public record that supports it. */
 async function getVisibleSkillEvidence(slug) {
     if (!supabase) {
-        throw new Error('Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY in backend/.env');
+        throw new Error('Missing SUPABASE_URL or SUPABASE_ANON_KEY in backend/.env');
     }
 
     const { data: skill, error: skillError } = await supabase

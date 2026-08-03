@@ -1,0 +1,4 @@
+"use client";
+import {useEffect,useState} from "react";
+const apiBase=process.env.NEXT_PUBLIC_API_URL;
+export default function SystemState({state,onRetry}){const [copy,setCopy]=useState({});useEffect(()=>{if(!apiBase)return;fetch(`${apiBase}/site-content/system_states`).then(response=>response.ok?response.json():Promise.reject()).then(content=>setCopy(content[state]||{})).catch(()=>{});},[state]);return <main className="state-page" role={state==="error"?"alert":undefined} aria-busy={state==="loading"?"true":undefined} aria-live="polite"><p className="overline">{copy.eyebrow}</p><h1>{copy.title}</h1><p>{copy.message}</p>{state==="loading"?<div className="loading-line" aria-hidden="true"/>:<div className="actions">{copy.retry_label&&<button className="button primary" type="button" onClick={onRetry}>{copy.retry_label}</button>}{copy.home_href&&<a className="button" href={copy.home_href}>{copy.home_label}</a>}</div>}</main>}

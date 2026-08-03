@@ -1,11 +1,3 @@
-import { logout } from "./actions";
-
-export const metadata = { title: "Admin", robots: { index: false, follow: false } };
-
-export default function AdminPage() {
-  return <main className="section-shell"><p className="overline">CareerOS / Private</p>
-    <h1>Portfolio administration</h1>
-    <p>Your authenticated session is active.</p>
-    <form action={logout}><button className="button" type="submit">Sign out</button></form>
-  </main>;
-}
+import {getSiteContent,optional} from "../data";import {logout} from "./actions";
+export const metadata={robots:{index:false,follow:false}};
+export default async function AdminPage(){const {data:copy}=await optional(()=>getSiteContent("admin"),{});return <main className="section-shell admin-handoff"><p className="overline">{copy.eyebrow}</p><h1>{copy.title}</h1><p>{copy.intro}</p><div className="admin-checklist">{(copy.cards||[]).map((card,index)=><article key={card.title}><span>{String(index+1).padStart(2,"0")}</span><h2>{card.title}</h2><p>{card.body}</p></article>)}</div><form action={logout}><button className="button" type="submit">{copy.logout_label}</button></form></main>}

@@ -1,17 +1,3 @@
-import { login } from "../actions";
-
-export const metadata = { title: "Admin Login", robots: { index: false, follow: false } };
-
-export default function Login({ searchParams }) {
-  const message = searchParams?.error
-    ? "Sign-in failed. Check your credentials and owner access."
-    : null;
-  return <main className="login-page"><form action={login} className="login-card">
-    <p className="overline">CareerOS / Private</p><h1>Welcome back.</h1>
-    <p>Sign in to manage Ahamed.dev content.</p>
-    {message && <p role="alert">{message}</p>}
-    <label>Email<input required type="email" name="email" autoComplete="email" placeholder="you@ahamed.dev" /></label>
-    <label>Password<input required type="password" name="password" autoComplete="current-password" /></label>
-    <button className="button primary" type="submit">Sign in securely →</button>
-  </form></main>;
-}
+import {getSiteContent,optional} from "../../data";import {login} from "../actions";
+export const metadata={robots:{index:false,follow:false}};
+export default async function Login({searchParams}){const {data:copy}=await optional(()=>getSiteContent("admin_login"),{});const message=searchParams?.error?copy.error_message:null;return <main className="login-page"><form action={login} className="login-card"><p className="overline">{copy.eyebrow}</p><h1>{copy.title}</h1><p>{copy.intro}</p>{message&&<p role="alert">{message}</p>}<label>{copy.email_label}<input required type="email" name="email" autoComplete="email"/></label><label>{copy.password_label}<input required type="password" name="password" autoComplete="current-password"/></label><button className="button primary" type="submit">{copy.submit_label}</button></form></main>}

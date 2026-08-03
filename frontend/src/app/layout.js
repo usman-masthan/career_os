@@ -1,21 +1,26 @@
 import "./globals.css";
 import SiteShell from "./components/SiteShell";
 import { ThemeProvider } from "./context/ThemeContext";
+import { getProfile, getSiteContent, optional } from "./data";
+import Analytics from "./components/Analytics";
 
-export const metadata = {
-  metadataBase: new URL("https://ahamed.dev"),
-  title: { default: "CareerOS — Ahamed's living career record", template: "%s — CareerOS" },
-  description: "The security engineering portfolio and professional record of Ahamed Usman.",
-  applicationName: "CareerOS",
-  openGraph: {
-    title: "CareerOS",
-    description: "A living professional record backed by Supabase.",
-    url: "https://ahamed.dev",
-    siteName: "CareerOS",
-    type: "website",
-  },
-};
+// Content is managed in Supabase. Resolve it at request time so a temporary
+// backend outage during `next build` cannot publish an empty static portfolio.
+// Successful API responses remain cached by the data layer.
+export const dynamic = "force-dynamic";
 
-export default function RootLayout({ children }) {
-  return <html lang="en" suppressHydrationWarning><body><ThemeProvider><SiteShell>{children}</SiteShell></ThemeProvider></body></html>;
+export async function generateMetadata() {
+  const [site, profile] = await Promise.all([optional(() => getSiteContent("home"), {}), optional(getProfile)]);
+  const record = profile.data[0] || {};
+  const seo = site.data.seo || {};
+  return { ...seo, metadataBase: new URL(record.website_url || process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"),
+    title: { default: seo.title || record.display_name, template: `%s — ${seo.title || record.display_name}` },
+    openGraph: { type:"website", siteName:seo.title || record.display_name, title:seo.title, description:seo.description },
+    twitter: { card:"summary_large_image", title:seo.title, description:seo.description },
+  };
+}
+
+export default async function RootLayout({ children }) {
+  const [profileResult, shellResult] = await Promise.all([optional(getProfile), optional(() => getSiteContent("shell"), {})]);
+  return <html lang="en" suppressHydrationWarning><body><ThemeProvider><Analytics/><SiteShell profile={profileResult.data[0] || {}} shell={shellResult.data}>{children}</SiteShell></ThemeProvider></body></html>;
 }

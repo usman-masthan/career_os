@@ -1,9 +1,10 @@
-import { content } from "../content";
-
-export const metadata = { title: "CV", description: "Ahamed’s concise professional CV." };
-
-export default function CV() {
-  return <main className="page"><header className="page-title"><p className="overline">Curriculum vitae</p><h1>Ahamed</h1><p>{content.profile.role} · {content.profile.location}</p></header>
-    <section className="case-sections"><section><span>01</span><h2>Profile</h2><p>{content.profile.summary}</p></section><section><span>02</span><h2>Experience</h2><div>{content.experience.map(x=><p key={x.role}><b>{x.role} · {x.organisation}</b><br/>{x.detail}</p>)}</div></section><section><span>03</span><h2>Capabilities</h2><div className="skill-cloud">{content.skills.flatMap(x=>x.items).map(x=><span key={x}>{x}</span>)}</div></section><section><span>04</span><h2>Contact</h2><p><a href="mailto:hello@ahamed.dev">hello@ahamed.dev</a></p></section></section>
-  </main>;
-}
+import Link from "next/link";
+import {formatPeriod,getEducation,getExperiences,getProfile,getProjects,getSiteContent,getSkills,optional} from "../data";
+export default async function CV(){const [p,x,e,s,j,c]=await Promise.all([optional(getProfile),optional(getExperiences),optional(getEducation),optional(getSkills),optional(getProjects),optional(()=>getSiteContent("cv"),{})]);const profile=p.data[0]||{},copy=c.data,projects=j.data||[];const sections=[
+  {key:"profile",body:<p>{profile.bio}</p>},
+  {key:"projects",body:<div>{projects.filter(v=>v.featured).slice(0,3).map(v=><p key={v.id}><b>{v.title}</b><br/>{v.recruiter_summary||v.summary}{v.repository_url&&<><br/><a href={v.repository_url}>{copy.repository_label}</a></>}</p>)}</div>},
+  {key:"experience",body:<div>{x.data.map(v=><p key={v.id}><b>{v.role} · {v.organisation}</b><br/><small>{formatPeriod(v.started_at,v.ended_at,v.location)}</small><br/>{v.description}</p>)}</div>},
+  {key:"education",body:<div>{e.data.map(v=><p key={v.id}><b>{v.qualification}{v.field_of_study?` — ${v.field_of_study}`:""}</b><br/>{v.institution}<br/><small>{formatPeriod(v.started_at,v.ended_at)}{v.description?` · ${v.description}`:""}</small></p>)}</div>},
+  {key:"skills",body:<div className="skill-cloud">{s.data.filter(v=>v.featured).map(v=><span key={v.id}>{v.name}</span>)}</div>},
+  {key:"contact",body:<p>{profile.email&&<><a href={`mailto:${profile.email}`}>{profile.email}</a><br/></>}{profile.linkedin_url&&<a href={profile.linkedin_url}>{copy.linkedin_label}</a>}{profile.linkedin_url&&profile.github_url&&" · "}{profile.github_url&&<a href={profile.github_url}>{copy.github_label}</a>}</p>}
+];return <main className="page cv-page"><header className="page-title"><p className="overline">{copy.eyebrow}</p><h1>{profile.display_name}</h1><p>{profile.headline} · {profile.location}</p><div className="actions">{copy.download?.href&&<a className="button primary" href={copy.download.href}>{copy.download.label}</a>}{copy.projects_action?.href&&<Link className="button" href={copy.projects_action.href}>{copy.projects_action.label}</Link>}</div></header><section className="case-sections">{sections.map((section,index)=><section key={section.key}><span>{String(index+1).padStart(2,"0")}</span><h2>{copy.sections?.[section.key]}</h2>{section.body}</section>)}</section></main>}
