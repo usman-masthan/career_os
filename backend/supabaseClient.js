@@ -1,10 +1,23 @@
 const { createClient } = require('@supabase/supabase-js');
 
 const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const supabaseAnonKey = process.env.SUPABASE_ANON_KEY;
 
-const supabase = supabaseUrl && supabaseServiceRoleKey
-    ? createClient(supabaseUrl, supabaseServiceRoleKey)
+// Public requests deliberately use the anonymous key so database RLS remains the
+// final authority. Never substitute the service-role key here.
+const supabase = supabaseUrl && supabaseAnonKey
+    ? createClient(supabaseUrl, supabaseAnonKey, {
+        auth: { persistSession: false, autoRefreshToken: false },
+    })
     : null;
 
-module.exports = { supabase };
+const createAuthenticatedClient = (accessToken) => (
+    supabaseUrl && supabaseAnonKey && accessToken
+        ? createClient(supabaseUrl, supabaseAnonKey, {
+            global: { headers: { Authorization: `Bearer ${accessToken}` } },
+            auth: { persistSession: false, autoRefreshToken: false },
+        })
+        : null
+);
+
+module.exports = { supabase, createAuthenticatedClient };
