@@ -1,5 +1,6 @@
 const router = require('express').Router();
 const { supabase } = require('../supabaseClient');
+const { getVisibleSkillEvidence } = require('../services/skillEvidence');
 
 const requireSupabase = (res) => {
     if (!supabase) {
@@ -38,6 +39,16 @@ router.route('/skills').get(async (req, res) => {
     }
 
     return res.json(data);
+});
+
+router.route('/skills/:slug/evidence').get(async (req, res) => {
+    try {
+        const data = await getVisibleSkillEvidence(req.params.slug);
+        if (!data) return res.status(404).json({ error: 'Visible skill not found' });
+        return res.json(data);
+    } catch (error) {
+        return res.status(400).json({ error: error.message });
+    }
 });
 
 router.route('/site-content').get(async (req, res) => {
