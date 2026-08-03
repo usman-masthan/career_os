@@ -1,0 +1,118 @@
+/* globals.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+@layer base {
+    html {
+        scroll-behavior: smooth;
+    }
+    
+    body {
+        font-family: 'Inter', sans-serif;
+        @apply text-body;
+    }
+    
+    h1 {
+        @apply text-heading-1 font-heading mb-4;
+    }
+    
+    h2 {
+        @apply text-heading-2 font-heading mb-3;
+    }
+    
+    h3 {
+        @apply text-heading-3 font-heading mb-2;
+    }
+    
+    p {
+        @apply mb-4;
+    }
+    
+    /* Dark mode styles */
+    .dark body {
+        background-color: #121212;
+        color: #ffffff;
+    }
+    
+    /* Light mode styles */
+    body {
+        background-color: #f8fafc;
+        color: #1e293b;
+    }
+}
+
+@layer components {
+    .section-container {
+        @apply max-w-[1240px] mx-auto px-4 py-16 md:py-24;
+    }
+    
+    .section-title {
+        @apply text-xl tracking-widest uppercase text-purple-accent font-medium mb-2;
+    }
+    
+    .card {
+        @apply rounded-xl p-6 transition-all duration-300;
+    }
+    
+    .dark .card {
+        @apply bg-dark-card shadow-card-dark hover:bg-dark-card-hover;
+    }
+    
+    .card {
+        @apply bg-light-card shadow-card-light hover:bg-light-card-hover;
+    }
+    
+    .btn {
+        @apply px-6 py-3 rounded-md font-medium transition-all duration-300 inline-block;
+    }
+    
+    .btn-primary {
+        @apply bg-purple-accent text-white hover:bg-purple-dark shadow-button;
+    }
+    
+    .btn-outline {
+        @apply border-2 border-purple-accent text-purple-accent hover:bg-purple-accent hover:text-white;
+    }
+}
+
+/* Theme transition */
+body, button, a, div {
+    transition-property: color, background-color, border-color, transform, box-shadow;
+    transition-duration: 300ms;
+}
+
+/* Utility classes */
+.bg-dark-bg {
+    background-color: #121212;
+}
+
+.bg-light-bg {
+    background-color: #f8fafc;
+}
+
+.text-gray-300 {
+    color: #d1d5db;
+}
+
+.text-gray-400 {
+    color: #9ca3af;
+}
+
+.bg-purple-accent {
+    background-color: #8b5cf6;
+}
+
+.hover\:bg-purple-700:hover {
+    background-color: #6d28d9;
+}
+
+.rounded-full {
+    border-radius: 9999px;
+}
