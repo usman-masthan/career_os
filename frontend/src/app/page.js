@@ -4,7 +4,10 @@ import { getProjects, getSiteContent, getSkills, safely } from "./data";
 
 const Arrow = () => <span aria-hidden="true">↗</span>;
 const SectionNote = ({ children }) => <p className="section-note" role="status">{children}</p>;
-const metadataFallback = { title: "Ahamed.dev — Software Engineer & AI Builder", description: "The CareerOS of Ahamed: selected software, applied AI research, experience, credentials, and writing." };
+const metadataFallback = {
+  title: "CareerOS — Ahamed's living career record",
+  description: "CareerOS connects Ahamed's projects, skills, research, credentials, and writing in a living professional record powered by Supabase.",
+};
 
 export const revalidate = 300;
 

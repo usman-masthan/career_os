@@ -1,6 +1,6 @@
 # Deployment
 
-CareerOS is deployed as two services: the Next.js app in `frontend/` and the Express API in `backend/`. Apply the versioned migrations in `backend/supabase/migrations/` before enabling database-backed content.
+CareerOS is a Next.js application with an Express API and Supabase as its persistence and authentication layer. Apply every versioned migration in `supabase/migrations/`, in filename order, before enabling database-backed content. That directory is the canonical database contract; do not maintain application models separately from it.
 
 ## Frontend environment
 

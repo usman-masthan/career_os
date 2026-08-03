@@ -10,7 +10,7 @@ insert into public.site_content (page_key, content)
 values
 ('home', $json$
 {
-  "seo": {"title":"Ahamed.dev — Software Engineer & AI Builder","description":"The CareerOS of Ahamed: selected software, applied AI research, experience, credentials, and writing."},
+  "seo": {"title":"CareerOS — Ahamed's living career record","description":"CareerOS connects Ahamed's projects, skills, research, credentials, and writing in a living professional record powered by Supabase."},
   "profile": {"name":"Ahamed","brand":"Ahamed.dev","role":"Software Engineer · AI & data systems","location":"Sri Lanka · Open to remote","availability":"Available for selected opportunities","summary":"I design dependable digital products at the intersection of software engineering, applied AI, and thoughtful user experience."},
   "actions": [
     {"label":"Explore selected work","href":"/projects"},
