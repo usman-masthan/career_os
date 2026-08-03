@@ -20,10 +20,23 @@ app.use(cors({
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,
 }));
-app.use(express.json());
+app.use(express.json({ limit: process.env.REQUEST_BODY_LIMIT || '16kb', strict: true }));
 
 const apiRouter = require('./routes/api');
 app.use('/api', apiRouter);
+
+app.use((error, req, res, next) => {
+    if (error instanceof SyntaxError || error.type === 'entity.too.large') {
+        const tooLarge = error.type === 'entity.too.large';
+        return res.status(tooLarge ? 413 : 400).json({
+            error: {
+                code: tooLarge ? 'PAYLOAD_TOO_LARGE' : 'INVALID_JSON',
+                message: tooLarge ? 'Request body is too large.' : 'Request body must be valid JSON.',
+            },
+        });
+    }
+    return next(error);
+});
 
 app.listen(port, () => {
     console.log(`Server is running on port: ${port}`);

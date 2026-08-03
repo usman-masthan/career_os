@@ -1,12 +1,13 @@
 const router = require('express').Router();
-const rateLimit = require('express-rate-limit');
+const { rateLimit, ipKeyGenerator } = require('express-rate-limit');
 const { supabase, createAuthenticatedClient } = require('../supabaseClient');
 const { getVisibleSkillEvidence } = require('../services/skillEvidence');
+const { createContactHandler } = require('../controllers/contact');
 
 const requireSupabase = (res) => {
     if (!supabase) {
         res.status(500).json({
-            error: 'Missing SUPABASE_URL or SUPABASE_ANON_KEY in backend/.env',
+            error: { code: 'SERVICE_UNAVAILABLE', message: 'Service is temporarily unavailable.' },
         });
         return false;
     }
@@ -25,6 +26,24 @@ const ownerWriteLimiter = rateLimit({
     standardHeaders: true,
     legacyHeaders: false,
 });
+
+const contactLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 5,
+    standardHeaders: true,
+    legacyHeaders: false,
+    keyGenerator: (req) => `${req.get('origin') || 'no-origin'}:${ipKeyGenerator(req.ip)}`,
+    handler: (req, res) => res.status(429).json({
+        error: { code: 'RATE_LIMITED', message: 'Too many contact attempts. Please try again later.' },
+    }),
+});
+
+const databaseFailure = (res, operation, error) => {
+    console.error(`Supabase ${operation} failed`, error);
+    return res.status(500).json({
+        error: { code: 'DATABASE_ERROR', message: 'Unable to complete the request.' },
+    });
+};
 
 const requireOwner = async (req, res, next) => {
     const header = req.get('authorization') || '';
@@ -52,7 +71,7 @@ router.route('/projects').get(async (req, res) => {
     const { data, error } = await supabase.from('projects').select('*').order('created_at', { ascending: false });
 
     if (error) {
-        return res.status(400).json({ error: error.message });
+        return databaseFailure(res, 'projects read', error);
     }
 
     return res.json(data);
@@ -66,7 +85,7 @@ router.route('/skills').get(async (req, res) => {
     const { data, error } = await supabase.from('skills').select('*').order('name', { ascending: true });
 
     if (error) {
-        return res.status(400).json({ error: error.message });
+        return databaseFailure(res, 'skills read', error);
     }
 
     return res.json(data);
@@ -78,7 +97,7 @@ router.route('/skills/:slug/evidence').get(async (req, res) => {
         if (!data) return res.status(404).json({ error: 'Visible skill not found' });
         return res.json(data);
     } catch (error) {
-        return res.status(400).json({ error: error.message });
+        return databaseFailure(res, 'skill evidence read', error);
     }
 });
 
@@ -94,33 +113,18 @@ router.route('/site-content').get(async (req, res) => {
         .single();
 
     if (error) {
-        return res.status(400).json({ error: error.message });
+        return databaseFailure(res, 'site content read', error);
     }
 
     return res.json(data.content);
 });
 
-router.route('/contact').post(async (req, res) => {
+router.route('/contact').post(contactLimiter, async (req, res) => {
     if (!requireSupabase(res)) {
         return;
     }
 
-    const { name, email, message } = req.body;
-    if (typeof name !== 'string' || name.trim().length < 1 || name.length > 100
-        || typeof email !== 'string' || email.length > 254 || !/^\S+@\S+\.\S+$/.test(email)
-        || typeof message !== 'string' || message.trim().length < 1 || message.length > 5000) {
-        return res.status(422).json({ error: 'Invalid contact submission' });
-    }
-
-    const { error } = await supabase.from('contacts').insert([{
-        name: name.trim(), email: email.trim().toLowerCase(), message: message.trim(),
-    }]);
-
-    if (error) {
-        return res.status(400).json({ error: error.message });
-    }
-
-    return res.json('Contact form submitted!');
+    return createContactHandler(supabase)(req, res);
 });
 
 router.put('/admin/site-content/:pageKey', ownerWriteLimiter, requireOwner, async (req, res) => {
@@ -130,7 +134,7 @@ router.put('/admin/site-content/:pageKey', ownerWriteLimiter, requireOwner, asyn
     const { data, error } = await req.supabase.from('site_content')
         .update({ content: req.body.content, updated_at: new Date().toISOString() })
         .eq('page_key', req.params.pageKey).select().single();
-    if (error) return res.status(400).json({ error: error.message });
+    if (error) return databaseFailure(res, 'site content update', error);
     return res.json(data);
 });
 
