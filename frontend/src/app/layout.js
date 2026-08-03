@@ -4,9 +4,16 @@ import { ThemeProvider } from "./context/ThemeContext";
 
 export const metadata = {
   metadataBase: new URL("https://ahamed.dev"),
-  title: { default: "Ahamed.dev — Software Engineer & AI Builder", template: "%s — Ahamed.dev" },
-  description: "The CareerOS of Ahamed: selected software, applied AI research, experience, credentials, and writing.",
-  openGraph: { title: "Ahamed.dev", description: "Useful systems for ambitious ideas.", url: "https://ahamed.dev", siteName: "Ahamed.dev", type: "website" },
+  title: { default: "CareerOS — Ahamed's living career record", template: "%s — CareerOS" },
+  description: "CareerOS connects Ahamed's projects, skills, research, credentials, and writing in a living professional record powered by Supabase.",
+  applicationName: "CareerOS",
+  openGraph: {
+    title: "CareerOS",
+    description: "A living professional record backed by Supabase.",
+    url: "https://ahamed.dev",
+    siteName: "CareerOS",
+    type: "website",
+  },
 };
 
 export default function RootLayout({ children }) {

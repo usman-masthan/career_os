@@ -1,6 +1,7 @@
 {
-  "name": "frontend",
+  "name": "careeros-web",
   "version": "0.1.0",
+  "description": "CareerOS web application with Supabase persistence",
   "private": true,
   "scripts": {
     "dev": "next dev",
