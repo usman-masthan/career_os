@@ -99,7 +99,7 @@ jobs:
       - name: Deploy backend artifact
         id: deploy
         run: |
-          deployment_url="$(npx --yes vercel@latest deploy --prebuilt --prod --cwd backend --token="$VERCEL_TOKEN")"
+          deployment_url="$(npx --yes vercel@latest deploy --prebuilt --prod --token="$VERCEL_TOKEN")"
           echo "url=$deployment_url" >> "$GITHUB_OUTPUT"
       - name: Check backend
         run: curl --fail --silent --show-error --retry 5 --retry-delay 5 "${{ steps.deploy.outputs.url }}/api/home" > /dev/null
