@@ -9,7 +9,7 @@ CareerOS uses Next.js for the public site, Express as the public application bou
 3. Deploy Edge Functions, then configure their secrets.
 4. Deploy the Express API with its server-only environment.
 5. Deploy Next.js with its public environment.
-6. Smoke-test `/api/home`, a project detail, contact submission, analytics `202`, Storage media, sitemap and admin authentication.
+6. Smoke-test `/api/home`, a project detail, the frontend `/api/contact` proxy, analytics `202`, Storage media, sitemap and admin authentication.
 
 Schema changes are forward-only. Roll back application code independently; correct a deployed schema with a new migration rather than editing migration history.
 
@@ -17,7 +17,7 @@ Schema changes are forward-only. Roll back application code independently; corre
 
 Frontend:
 
-- `NEXT_PUBLIC_API_URL`: absolute Express base URL including `/api`.
+- `NEXT_PUBLIC_API_URL`: absolute Express base URL including `/api`. This is read by both server-rendered data loaders and the same-origin contact proxy, so changing it requires a frontend redeploy.
 - `NEXT_PUBLIC_SITE_URL`: canonical public origin used by sitemap and robots.
 - `NEXT_PUBLIC_SUPABASE_URL`: project URL used by Auth and public Storage assets.
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY`: publishable/anonymous key protected by RLS.
@@ -26,7 +26,7 @@ Frontend:
 Backend:
 
 - `SUPABASE_URL` and `SUPABASE_ANON_KEY`: RLS-constrained public database client.
-- `FRONTEND_URL`: canonical allowed CORS origin.
+- `FRONTEND_URL`: canonical allowed CORS origin (scheme and hostname only, with no path). It must exactly match `NEXT_PUBLIC_SITE_URL` in production.
 - `DEVELOPMENT_ORIGINS`: optional comma-separated local origins.
 - `PORT`, `REQUEST_BODY_LIMIT`: runtime controls.
 
