@@ -1,0 +1,4 @@
+project_id = "career_os"
+
+[functions.github-sync]
+verify_jwt = false

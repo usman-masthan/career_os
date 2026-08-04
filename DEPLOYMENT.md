@@ -13,6 +13,30 @@ CareerOS uses Next.js for the public site, Express as the public application bou
 
 Schema changes are forward-only. Roll back application code independently; correct a deployed schema with a new migration rather than editing migration history.
 
+## Automated CI/CD
+
+`.github/workflows/ci-cd.yml` validates every pull request. A push to `main` runs the same checks and then releases in dependency order: Supabase migrations and Edge Functions, Express, Next.js, and production smoke tests. The production GitHub environment should require approval if database changes need a manual release gate.
+
+Configure these GitHub Actions secrets:
+
+- `SUPABASE_ACCESS_TOKEN`, `SUPABASE_DB_PASSWORD`, `SUPABASE_PROJECT_ID`
+- `VERCEL_TOKEN`, `VERCEL_ORG_ID`
+- `VERCEL_BACKEND_PROJECT_ID`, `VERCEL_FRONTEND_PROJECT_ID`
+
+The two Vercel projects must already contain the runtime variables listed below. Disable Vercel's automatic Git production deployments so GitHub Actions is the single deployment authority and the frontend cannot release before its database and API dependencies.
+
+Database schema changes must be created as a new file in `supabase/migrations/` and merged through `main`; direct production schema edits bypass validation and are not supported.
+
+### Immediate database content updates
+
+The Express API reads Supabase on every request, so it sees committed row changes immediately. Next.js caches public reads, so configure one Supabase Database Webhook for `INSERT`, `UPDATE`, and `DELETE` on the public content tables. Point it to:
+
+```text
+https://<frontend-domain>/api/revalidate
+```
+
+Add an HTTP header named `x-revalidate-secret` whose value matches the frontend's server-only `REVALIDATE_SECRET` environment variable. Apply it to `profile`, `projects`, `skills`, `experiences`, `education`, `credentials`, `research`, `achievements`, `publications`, `site_content`, `project_skills`, `project_evidence`, and `project_media`. The webhook invalidates the affected cache tags and site routes; the existing time-based revalidation remains a fallback.
+
 ## Environment
 
 Frontend:
@@ -22,6 +46,7 @@ Frontend:
 - `NEXT_PUBLIC_SUPABASE_URL`: project URL used by Auth and public Storage assets.
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY`: publishable/anonymous key protected by RLS.
 - `PORTFOLIO_OWNER_EMAILS`: server-only fallback for the owner session; prefer an Auth `portfolio_owner` app-metadata claim.
+- `REVALIDATE_SECRET`: server-only high-entropy value shared with the Supabase Database Webhook; never prefix it with `NEXT_PUBLIC_`.
 
 Backend:
 
