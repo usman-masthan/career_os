@@ -92,14 +92,10 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      - name: Pull backend production settings
-        run: npx --yes vercel@latest pull --yes --environment=production --token="$VERCEL_TOKEN"
-      - name: Build backend artifact
-        run: npx --yes vercel@latest build --prod --token="$VERCEL_TOKEN"
-      - name: Deploy backend artifact
+      - name: Deploy backend from source
         id: deploy
         run: |
-          deployment_url="$(npx --yes vercel@latest deploy --prebuilt --prod --token="$VERCEL_TOKEN")"
+          deployment_url="$(npx --yes vercel@latest deploy --prod --token="$VERCEL_TOKEN")"
           echo "url=$deployment_url" >> "$GITHUB_OUTPUT"
       - name: Check backend
         run: curl --fail --silent --show-error --retry 5 --retry-delay 5 "${{ steps.deploy.outputs.url }}/api/home" > /dev/null
@@ -119,14 +115,12 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      - name: Pull frontend production settings
-        run: npx --yes vercel@latest pull --yes --environment=production --token="$VERCEL_TOKEN"
-      - name: Build frontend artifact
-        run: npx --yes vercel@latest build --prod --token="$VERCEL_TOKEN"
-      - name: Deploy frontend artifact
+      - name: Deploy frontend from source
         id: deploy
         run: |
-          deployment_url="$(npx --yes vercel@latest deploy --prebuilt --prod --token="$VERCEL_TOKEN")"
+          deployment_url="$(npx --yes vercel@latest deploy --prod --token="$VERCEL_TOKEN")"
           echo "url=$deployment_url" >> "$GITHUB_OUTPUT"
-      - name: Check frontend
-        run: curl --fail --silent --show-error --retry 5 --retry-delay 5 "${{ steps.deploy.outputs.url }}/" > /dev/null
+      - name: Check database-backed frontend
+        run: |
+          curl --fail --silent --show-error --retry 5 --retry-delay 5 "${{ steps.deploy.outputs.url }}/" \
+            | grep --fixed-strings 'application/ld+json' > /dev/null
