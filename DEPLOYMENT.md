@@ -1,5 +1,7 @@
 # CareerOS operations
 
+For incident response, rollback, secret rotation, and failure playbooks, see [`docs/RUNBOOK.md`](docs/RUNBOOK.md). For backup decisions and restore validation, see [`docs/BACKUP_RESTORE.md`](docs/BACKUP_RESTORE.md).
+
 CareerOS uses Next.js for the public site, Express as the public application boundary, and Supabase for PostgreSQL, Auth, Storage, privacy analytics and scheduled integrations. Versioned SQL under `supabase/migrations/` is the canonical database contract.
 
 ## Release order
